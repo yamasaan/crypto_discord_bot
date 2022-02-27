@@ -18,7 +18,9 @@ client.on('interactionCreate', async (interaction) => {
     return
   }
   const { commandName, options } = interaction
-
+  const d = new Date()
+  const datetime = d.toLocaleString()
+  console.log(datetime)
   //check symbol price binance and bitkub
   if (commandName === 'price') {
     const symbol = options.getString('symbol')
