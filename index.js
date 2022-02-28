@@ -1,6 +1,6 @@
 const { Client, Intents } = require('discord.js')
-const alert = require('./src/alert')
 const { firestore } = require('./firebase')
+const schedule = require('./src/schedule')
 const binance = require('./src/binance')
 const bitkub = require('./src/bitkub')
 const dotenv = require('dotenv')
@@ -16,23 +16,23 @@ client.once('ready', async () => {
 })
 
 const sendAlertDM = () => {
-  alert.every1min()
+  schedule.every1min()
 
-  alert.every5min()
+  schedule.every5min()
 
-  alert.every15min()
+  schedule.every15min()
 
-  alert.every30min()
+  schedule.every30min()
 
-  alert.every1h()
+  schedule.every1h()
 
-  alert.every4h()
+  schedule.every4h()
 
-  alert.everyD()
+  schedule.everyD()
 
-  alert.everyW()
+  schedule.everyW()
 
-  alert.everyM()
+  schedule.everyM()
 }
 
 client.on('interactionCreate', async (interaction) => {
@@ -93,7 +93,7 @@ client.on('interactionCreate', async (interaction) => {
     console.log(userId)
     const binanceSymbolPrice = await binance.getPrice(symbolAlert)
     const bitkubSymbolPrice = await bitkub.getPrice(symbolAlert)
-    await interaction.reply('Wating please')
+    await interaction.reply({ content: 'Wating please', ephemeral: true })
     if (binanceSymbolPrice === null || bitkubSymbolPrice === null) {
       return await interaction.editReply({ content: 'Failed Set Alert, Not Found Symbol on Exchange', ephemeral: true })
     } else {
@@ -142,5 +142,3 @@ function timeout(ms) {
 }
 
 client.login(process.env.DISCORD_TOKEN)
-
-module.exports = { client: client }

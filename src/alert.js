@@ -2,7 +2,6 @@ const { Client, Intents } = require('discord.js')
 const { firestore } = require('../firebase')
 const binance = require('../src/binance')
 const bitkub = require('../src/bitkub')
-const cron = require('node-cron')
 const dotenv = require('dotenv')
 dotenv.config()
 
@@ -67,78 +66,4 @@ const getAlert = async (schedule) => {
   })
 }
 
-// getAlert(schedule:string) => 1m 5m 15m 30m 1h 4h d w m
-const every1min = () => {
-  cron.schedule('*/1 * * * *', async () => {
-    await getAlert('1m')
-    console.log('called schedule 1 min')
-  })
-}
-
-const every5min = () => {
-  cron.schedule('*/5 * * * *', async () => {
-    await getAlert('5m')
-    console.log('called schedule 5 min')
-  })
-}
-
-const every15min = () => {
-  cron.schedule('*/15 * * * *', async () => {
-    await getAlert('15m')
-    console.log('called schedule 15 min')
-  })
-}
-
-const every30min = () => {
-  cron.schedule('*/30 * * * *', async () => {
-    await getAlert('30m')
-    console.log('called schedule 30 min')
-  })
-}
-
-const every1h = () => {
-  cron.schedule('*/60 * * * *', async () => {
-    await getAlert('1h')
-    console.log('called schedule 1 h')
-  })
-}
-
-const every4h = () => {
-  cron.schedule('0 */4 * * *', async () => {
-    await getAlert('4h')
-    console.log('called schedule 4 h')
-  })
-}
-
-const everyD = () => {
-  cron.schedule('0 0 * * *', async () => {
-    await getAlert('d')
-    console.log('called schedule D')
-  })
-}
-
-const everyW = () => {
-  cron.schedule('0 0 * * 1', async () => {
-    await getAlert('w')
-    console.log('called schedule W')
-  })
-}
-
-const everyM = () => {
-  cron.schedule('0 0 1 * *', async () => {
-    await getAlert('m')
-    console.log('called schedule M')
-  })
-}
-
-module.exports = {
-  every1min: every1min,
-  every5min: every5min,
-  every15min: every15min,
-  every30min: every30min,
-  every1h: every1h,
-  every4h: every4h,
-  everyD: everyD,
-  everyW: everyW,
-  everyM: everyM,
-}
+module.exports = { getAlert }
