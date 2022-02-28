@@ -10,13 +10,13 @@ async function getPrice(symbol) {
   const res = await axios.get(base_url + symbol_price_ticker, {
     params: { sym: get_symbol },
   })
-  if (Object.entries(res.data).length !== 0 && res.data.result != null) {
+  if (Object.entries(res.data).length !== 0 && res.data.result !== null) {
     for (const i in res.data) {
       const data = res.data[i].last
       console.log(`Symbol ${get_symbol} Price ${parseFloat(data).toFixed(2)}`)
       return parseFloat(data).toFixed(2)
     }
-  } else if (res.data.result == null) {
+  } else {
     console.log('Bitkub Not Found Symbol')
     return null
   }
