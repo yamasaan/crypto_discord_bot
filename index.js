@@ -1,5 +1,7 @@
 const { Client, Intents } = require('discord.js')
 
+const { firestore } = require('./firebase')
+
 const binance = require('./src/binance')
 const bitkub = require('./src/bitkub')
 
@@ -56,14 +58,51 @@ client.on('interactionCreate', async (interaction) => {
 
   //set alert condition
   if (commandName === 'setalert') {
-    const symbol = options.getString('symbol')
-    const price = options.getNumber('price')
-    const binanceSymbolPrice = await binance.getPrice(symbol)
-    const bitkubSymbolPrice = await bitkub.getPrice(symbol)
+    const nameAlert = options.getString('name')
+    const exchangeAlert = options.getString('exchange').toLowerCase()
+    const symbolAlert = options.getString('symbol').toLowerCase()
+    const priceAlert = options.getNumber('price').toFixed(2)
+    const conditionAlert = options.getString('condition').toLowerCase()
+    const scheduleAlert = options.getString('schedule').toLowerCase()
+    const userId = interaction.user.id
+    console.log(userId)
+    const binanceSymbolPrice = await binance.getPrice(symbolAlert)
+    const bitkubSymbolPrice = await bitkub.getPrice(symbolAlert)
 
     if (binanceSymbolPrice === null || bitkubSymbolPrice === null) {
-      return await interaction.reply({ content: 'Not Found Symbol on Exchange', ephemeral: true })
+      return await interaction.reply({ content: 'Failed Set Alert, Not Found Symbol on Exchange', ephemeral: true })
     } else {
+      let priceCurrency = exchangeAlert === 'binance' ? 'usdt' : 'thb'
+      const content =
+        `name: ${nameAlert}` +
+        '\n' +
+        `exchange: ${exchangeAlert}` +
+        '\n' +
+        `symbol: ${symbolAlert}` +
+        '\n' +
+        `price: ${priceAlert} ${priceCurrency}` +
+        '\n' +
+        `condition: ${conditionAlert}` +
+        '\n' +
+        `schedule: ${scheduleAlert}`
+      await firestore
+        .collection('alert')
+        .add({
+          userId: userId,
+          name: nameAlert,
+          exchange: exchangeAlert,
+          symbol: symbolAlert,
+          price: priceAlert,
+          condition: conditionAlert,
+          schedule: scheduleAlert,
+        })
+        .then(async () => {
+          await interaction.reply({ content: content, ephemeral: true })
+          console.log('Save Alert Condition')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     }
   }
   //end set alert condition
