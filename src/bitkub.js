@@ -13,11 +13,9 @@ async function getPrice(symbol) {
   if (Object.entries(res.data).length !== 0 && res.data.result !== null) {
     for (const i in res.data) {
       const data = res.data[i].last
-      console.log(`Symbol ${get_symbol} Price ${parseFloat(data).toFixed(2)}`)
       return parseFloat(data).toFixed(2)
     }
   } else {
-    console.log('Bitkub Not Found Symbol')
     return null
   }
 }

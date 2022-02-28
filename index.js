@@ -1,19 +1,39 @@
 const { Client, Intents } = require('discord.js')
-
+const alert = require('./src/alert')
 const { firestore } = require('./firebase')
-
 const binance = require('./src/binance')
 const bitkub = require('./src/bitkub')
-
 const dotenv = require('dotenv')
 dotenv.config()
 
 const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES],
 })
-client.once('ready', () => {
+
+client.once('ready', async () => {
+  sendAlertDM()
   console.log('Ready!')
 })
+
+const sendAlertDM = async () => {
+  alert.every1min()
+
+  alert.every5min()
+
+  alert.every15min()
+
+  alert.every30min()
+
+  alert.every1h()
+
+  alert.every4h()
+
+  alert.everyD()
+
+  alert.everyW()
+
+  alert.everyM()
+}
 
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) {
@@ -35,19 +55,24 @@ client.on('interactionCreate', async (interaction) => {
     let bitkubPrice = ''
 
     if (binanceSymbolPrice === null && bitkubSymbolPrice === null) {
+      console.log('Not Found Symbol on Exchange')
       return await interaction.reply({ content: 'Not Found Symbol on Exchange', ephemeral: true })
     }
 
     if (binanceSymbolPrice !== null) {
       binancePrice = `🤑 BINANCE ${symbol.toUpperCase()}_USDT PRICE: **${binanceSymbolPrice}** USDT`
+      console.log(`Symbol ${symbol.toUpperCase()} Price ${binanceSymbolPrice}`)
     } else {
       binancePrice = 'Not Found Symbol'
+      console.log('Not Found Symbol')
     }
 
     if (bitkubSymbolPrice !== null) {
       bitkubPrice = `🤑 BITKUB ${symbol.toUpperCase()}_THB PRICE: **${bitkubSymbolPrice}** THB`
+      console.log(`Symbol ${symbol.toUpperCase()} Price ${binanceSymbolPrice}`)
     } else {
       bitkubPrice = 'Not Found Symbol'
+      console.log('Not Found Symbol')
     }
 
     const content = binancePrice + '\n' + bitkubPrice
@@ -63,7 +88,7 @@ client.on('interactionCreate', async (interaction) => {
     const symbolAlert = options.getString('symbol').toLowerCase()
     const priceAlert = options.getNumber('price').toFixed(2)
     const conditionAlert = options.getString('condition').toLowerCase()
-    const scheduleAlert = options.getString('schedule').toLowerCase()
+    const alert = options.getString('schedule').toLowerCase()
     const userId = interaction.user.id
     console.log(userId)
     const binanceSymbolPrice = await binance.getPrice(symbolAlert)
@@ -84,7 +109,8 @@ client.on('interactionCreate', async (interaction) => {
         '\n' +
         `condition: ${conditionAlert}` +
         '\n' +
-        `schedule: ${scheduleAlert}`
+        `schedule: ${alert}`
+
       await firestore
         .collection('alert')
         .add({
@@ -94,13 +120,16 @@ client.on('interactionCreate', async (interaction) => {
           symbol: symbolAlert,
           price: priceAlert,
           condition: conditionAlert,
-          schedule: scheduleAlert,
+          schedule: alert,
         })
         .then(async () => {
+          await timeout(300)
           await interaction.reply({ content: content, ephemeral: true })
           console.log('Save Alert Condition')
         })
-        .catch((error) => {
+        .catch(async (error) => {
+          await timeout(300)
+          await interaction.reply({ content: 'Try again', ephemeral: true })
           console.log(error)
         })
     }
@@ -108,4 +137,10 @@ client.on('interactionCreate', async (interaction) => {
   //end set alert condition
 })
 
+function timeout(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 client.login(process.env.DISCORD_TOKEN)
+
+module.exports = { client: client }

@@ -12,10 +12,8 @@ async function getPrice(symbol) {
       params: { symbol: get_symbol },
     })
     const data = res.data.price
-    console.log(`Symbol ${get_symbol} Price ${parseFloat(data).toFixed(2)}`)
     return parseFloat(data).toFixed(2)
   } catch {
-    console.log('Binance Not Found Symbol')
     return null
   }
 }

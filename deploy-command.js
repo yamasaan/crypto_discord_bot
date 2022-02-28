@@ -42,9 +42,9 @@ const commands = [
         .addChoice('30m', '30m')
         .addChoice('1h', '1h')
         .addChoice('4h', '4h')
-        .addChoice('1d', '1d')
-        .addChoice('1w', '1w')
-        .addChoice('1m', '1m')
+        .addChoice('d', 'd')
+        .addChoice('w', 'w')
+        .addChoice('m', 'm')
     ),
 ].map((command) => command.toJSON())
 
