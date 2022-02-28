@@ -21,7 +21,7 @@ const getAlert = async (schedule) => {
   }
 
   snapshot.forEach(async (doc) => {
-    let priceCurrency = doc.data().exchange === 'binance' ? 'usdt' : 'thb'
+    let priceCurrency = doc.data().exchange == 'binance' ? 'usdt' : 'thb'
     let content = (name, exchange, symbol, price, pricelast) =>
       `**Alert Remember**` +
       '\n' +
@@ -36,26 +36,29 @@ const getAlert = async (schedule) => {
       `price last: ${pricelast} ${priceCurrency}`
 
     const user = await client.users.fetch(doc.data().userId)
-    if (doc.data().exchange === 'bitkub') {
-      const price = await bitkub.getPrice(doc.data().symbol)
-      if (price >= doc.data().price && doc.data().condition === 'more') {
-        user.send(content(doc.data().name, doc.data().exchange, doc.data().symbol, doc.data().price, price))
+    if (doc.data().exchange == 'bitkub') {
+      const price = Number(doc.data().price).toFixed(2)
+      const priceLast = Number(await bitkub.getPrice(doc.data().symbol)).toFixed(2)
+
+      if (priceLast >= price && doc.data().condition == 'more') {
+        await user.send(content(doc.data().name, doc.data().exchange, doc.data().symbol, price, priceLast))
         console.log('schedule alert =>' + doc.data().schedule)
       }
-      if (price <= doc.data().price && doc.data().condition === 'less') {
-        user.send(content(doc.data().name, doc.data().exchange, doc.data().symbol, doc.data().price, price))
+      if (priceLast <= price && doc.data().condition == 'less') {
+        await user.send(content(doc.data().name, doc.data().exchange, doc.data().symbol, price, priceLast))
         console.log('schedule alert =>' + doc.data().schedule)
       }
     }
 
-    if (doc.data().exchange === 'binance') {
-      const price = await binance.getPrice(doc.data().symbol)
-      if (price >= doc.data().price && doc.data().condition === 'more') {
-        user.send(content(doc.data().name, doc.data().exchange, doc.data().symbol, doc.data().price, price))
+    if (doc.data().exchange == 'binance') {
+      const price = Number(doc.data().price).toFixed(2)
+      const priceLast = Number(await binance.getPrice(doc.data().symbol)).toFixed(2)
+      if (priceLast >= price && doc.data().condition == 'more') {
+        await user.send(content(doc.data().name, doc.data().exchange, doc.data().symbol, price, priceLast))
         console.log('schedule alert =>' + doc.data().schedule)
       }
-      if (price <= doc.data().price && doc.data().condition === 'less') {
-        user.send(content(doc.data().name, doc.data().exchange, doc.data().symbol, doc.data().price, price))
+      if (price <= price && doc.data().condition == 'less') {
+        await user.send(content(doc.data().name, doc.data().exchange, doc.data().symbol, price, priceLast))
         console.log('schedule alert =>' + doc.data().schedule)
       }
     }

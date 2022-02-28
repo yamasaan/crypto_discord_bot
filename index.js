@@ -15,7 +15,7 @@ client.once('ready', async () => {
   console.log('Ready!')
 })
 
-const sendAlertDM = async () => {
+const sendAlertDM = () => {
   alert.every1min()
 
   alert.every5min()
@@ -93,9 +93,9 @@ client.on('interactionCreate', async (interaction) => {
     console.log(userId)
     const binanceSymbolPrice = await binance.getPrice(symbolAlert)
     const bitkubSymbolPrice = await bitkub.getPrice(symbolAlert)
-
+    await interaction.reply('Wating please')
     if (binanceSymbolPrice === null || bitkubSymbolPrice === null) {
-      return await interaction.reply({ content: 'Failed Set Alert, Not Found Symbol on Exchange', ephemeral: true })
+      return await interaction.editReply({ content: 'Failed Set Alert, Not Found Symbol on Exchange', ephemeral: true })
     } else {
       let priceCurrency = exchangeAlert === 'binance' ? 'usdt' : 'thb'
       const content =
@@ -123,13 +123,13 @@ client.on('interactionCreate', async (interaction) => {
           schedule: alert,
         })
         .then(async () => {
-          await timeout(300)
-          await interaction.reply({ content: content, ephemeral: true })
+          await timeout(2000)
+          await interaction.editReply({ content: content, ephemeral: true })
           console.log('Save Alert Condition')
         })
         .catch(async (error) => {
-          await timeout(300)
-          await interaction.reply({ content: 'Try again', ephemeral: true })
+          await timeout(2000)
+          await interaction.editReply({ content: 'Try again', ephemeral: true })
           console.log(error)
         })
     }

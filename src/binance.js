@@ -12,7 +12,7 @@ async function getPrice(symbol) {
       params: { symbol: get_symbol },
     })
     const data = res.data.price
-    return parseFloat(data).toFixed(2)
+    return Number(data).toFixed(2)
   } catch {
     return null
   }
